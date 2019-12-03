@@ -6,6 +6,7 @@
 package temperaturecalc;
 
 import java.util.concurrent.TimeUnit;
+import static javafx.scene.input.KeyCode.X;
 import org.eclipse.paho.client.mqttv3.*;
 
 /**
@@ -21,6 +22,20 @@ public class TemperatureCalc {
     static int Station1Temp;
     static int Station2Temp;
     static int Station3Temp;
+    
+    static int AverageTemp;
+
+    
+     static void publishAverageTemp (int averageTemp , String topic) throws MqttException, InterruptedException{
+     
+            MqttClient Station = new MqttClient("tcp://localhost:1883", "Average");
+            Station.connect();
+            MqttMessage message = new MqttMessage();
+           
+            message.setPayload(Integer.toString(averageTemp).getBytes());                 
+            Station.publish(topic, message);
+             
+      }
 
     static void TemperatureCalcSUB() throws MqttException {
 
@@ -39,7 +54,7 @@ public class TemperatureCalc {
                 
                     TimeUnit.SECONDS.sleep(5);
 
-                    if (!"/vent".equals(topic)) {
+                    if (topic.contains("/temperature/")) {
                         if (Station1 == null) {
                             Station1 = topic;
                         } else {
@@ -52,22 +67,22 @@ public class TemperatureCalc {
 
                         if (Station1 == topic) {
                             Station1Temp = Integer.parseInt(new String(message.getPayload()));
-                            System.out.println(topic + " " + Station1Temp);
 
                         }
                         if (Station2 == topic) {
                             Station2Temp = Integer.parseInt(new String(message.getPayload()));
-                            System.out.println(topic + " " + Station2Temp);
 
                         }
                         if (Station3 == topic) {
                             Station3Temp = Integer.parseInt(new String(message.getPayload()));
-                            System.out.println(topic + " " + Station3Temp);
+                          
 
                         }
 
-                        System.out.println("moyenne = (" +Station1Temp+"+"+Station2Temp+"+"+Station3Temp+")"+((Station1Temp + Station2Temp + Station3Temp) / 3));
-
+                      //  System.out.println("moyenne = (" +Station1Temp+"+"+Station2Temp+"+"+Station3Temp+")"+((Station1Temp + Station2Temp + Station3Temp) / 3));
+                        AverageTemp =(Station1Temp + Station2Temp + Station3Temp) / 3;
+                        publishAverageTemp(AverageTemp, "/moyennetemp");
+                        
                     }
 
                 

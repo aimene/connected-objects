@@ -27,7 +27,7 @@ public class Station {
             Station.connect();
             MqttMessage message = new MqttMessage();
               while (true) {
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(1);
                 
                 message.setPayload(Integer.toString((int) (Math.random() * (20-10))).getBytes());                 
                 Station.publish("/temperature/"+X, message);
