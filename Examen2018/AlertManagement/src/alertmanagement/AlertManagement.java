@@ -17,24 +17,26 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * @author e1801322
  */
 public class AlertManagement {
+
     static int valeurVent;
-        static void AlertManagementPUB (String messageToSend , String topic) throws MqttException, InterruptedException{
-     
-            MqttClient Station = new MqttClient("tcp://localhost:1883", "Average");
-            Station.connect();
-            MqttMessage message = new MqttMessage();
-           
-            message.setPayload((messageToSend).getBytes());                 
-            Station.publish(topic, message);
-             
-      }
 
-   static void AlertManagementSUB() throws MqttException {
+    static void AlertManagementPUB(String messageToSend, String topic) throws MqttException, InterruptedException {
 
-        MqttClient AlertManagement = new MqttClient("tcp://localhost:1883", "TemperatureCalc");
+        MqttClient Station = new MqttClient("tcp://localhost:1883", "AlertManagementPUB");
+        Station.connect();
+        MqttMessage message = new MqttMessage();
+
+        message.setPayload((messageToSend).getBytes());
+        Station.publish(topic, message);
+        Station.disconnect();
+
+    }
+
+    static void AlertManagementSUB() throws MqttException {
+
+        MqttClient AlertManagement = new MqttClient("tcp://localhost:1883", "AlertManagementSUB");
 
         AlertManagement.setCallback(new MqttCallback() {
-           
 
             @Override
             public void connectionLost(Throwable cause) {
@@ -43,23 +45,19 @@ public class AlertManagement {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                
-                 if(topic.equals("/vent")){
-                     valeurVent = Integer.parseInt(new String(message.getPayload()));
-                       System.out.println("vent  " + valeurVent);
-                     if (valeurVent==3) {
-                         AlertManagementPUB("début tempête", "/alerteTempete");
-                         
-                           TimeUnit.SECONDS.sleep(3);
-                           
-                         AlertManagementPUB("fin de tempête", "/alerteTempete");
+              
+                    if (topic.equals("/vent")) {
+                        valeurVent = Integer.parseInt(new String(message.getPayload()));
+                        System.out.println("vent  " + valeurVent);
+                        if (valeurVent == 3) {
+                            AlertManagementPUB("debut tempete", "/alerteTempete");
 
-                     }
-                 }
-            
-                   
+                            TimeUnit.SECONDS.sleep(1);
 
-                 
+                            AlertManagementPUB("fin de tempete", "/alerteTempete");
+
+                        }
+                    }
 
                 
 
@@ -71,13 +69,11 @@ public class AlertManagement {
         });
         AlertManagement.connect();
         AlertManagement.subscribe("/vent");
-                AlertManagement.disconnect();
-
-       
 
     }
+
     public static void main(String[] args) throws MqttException {
         AlertManagementSUB();
     }
-    
+
 }

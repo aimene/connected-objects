@@ -19,65 +19,58 @@ import java.util.Scanner;
  */
 public class SmartPhone {
 
-    
     static String url = "http://localhost:4567/smartphone";
     static String charset = "UTF-8";
 
     public static void main(String[] args) throws MalformedURLException, IOException {
-        
-        
+
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("Accept-Charset", charset);
         InputStream response = connection.getInputStream();
-        
-        try (Scanner scanner = new Scanner(response)) 
-        {
-	// le delimitateur "\A" pour le debut d'une String
-	String tempCourante = scanner.useDelimiter("\\A").next();
-	// Affiche le resultat sur la console
-	System.out.println(tempCourante);
+
+        try (Scanner scanner = new Scanner(response)) {
+            // le delimitateur "\A" pour le debut d'une String
+            String tempCourante = scanner.useDelimiter("\\A").next();
+            // Affiche le resultat sur la console
+            System.out.println(tempCourante);
         }
-        
+
         // ======================================================
         // post 
-        
-         int tempChauffage =10;
-        String query = String.format( 
-		"tempChauffage=%d",
-		tempChauffage);
-        
-        
-            // Envoie de la requete  HTTP POST
-          connection = new URL(url).openConnection();
+        int tempChauffage = 10;
+        String query = String.format(
+                "tempChauffage=%d",
+                tempChauffage);
+
+        // Envoie de la requete  HTTP POST
+        connection = new URL(url).openConnection();
 
         // Pour specifier que la requete est de type HTTP POST
-        connection.setDoOutput(true); 
+        connection.setDoOutput(true);
 
         // Pour le codage des caractères
         connection.setRequestProperty("Accept-Charset", charset);
 
         // Pour le format des donnees envoyees par la requete HTTP POST
-        connection.setRequestProperty("Content-Type", 
-            "application/x-www-form-urlencoded;charset=" + charset);
+        connection.setRequestProperty("Content-Type",
+                "application/x-www-form-urlencoded;charset=" + charset);
 
         // Pour envoyer les parametres de la requete
         try (OutputStream output = connection.getOutputStream()) {
-                    output.write(query.getBytes(charset));
+            output.write(query.getBytes(charset));
         }
         // Recuperation du flux pour lire la reponse de la requete
-         response = connection.getInputStream();
+        response = connection.getInputStream();
 
         // Lecture de la reponse de la requete
-        try (Scanner scanner = new Scanner(response)) 
-        {
-                 // le delimitateur "\A" pour le debut d'une String
-                String responseBody = 
-                                scanner.useDelimiter("\\A").next();
-                // Affiche le resultat sur la console
-                System.out.println(responseBody);
+        try (Scanner scanner = new Scanner(response)) {
+            // le delimitateur "\A" pour le debut d'une String
+            String responseBody
+                    = scanner.useDelimiter("\\A").next();
+            // Affiche le resultat sur la console
+            System.out.println(responseBody);
         }
 
-
     }
-    
+
 }

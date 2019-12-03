@@ -28,12 +28,14 @@ public class TemperatureCalc {
     
      static void publishAverageTemp (int averageTemp , String topic) throws MqttException, InterruptedException{
      
-            MqttClient Station = new MqttClient("tcp://localhost:1883", "Average");
-            Station.connect();
+            MqttClient AverageTempClient = new MqttClient("tcp://localhost:1883", "Average");
+            AverageTempClient.connect();
             MqttMessage message = new MqttMessage();
            
             message.setPayload(Integer.toString(averageTemp).getBytes());                 
-            Station.publish(topic, message);
+            AverageTempClient.publish(topic, message);
+            AverageTempClient.disconnect();
+
              
       }
 

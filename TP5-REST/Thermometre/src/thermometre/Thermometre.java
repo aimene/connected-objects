@@ -55,8 +55,7 @@ public class Thermometre {
         try (Scanner scanner = new Scanner(response)) 
         {
                  // le delimitateur "\A" pour le debut d'une String
-                String responseBody = 
-                                scanner.useDelimiter("\\A").next();
+                String responseBody = scanner.useDelimiter("\\A").next();
                 // Affiche le resultat sur la console
                 System.out.println(responseBody);
         }
